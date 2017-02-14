@@ -6,7 +6,7 @@ use DB;
 use Illuminate\Console\Command;
 use Schema;
 
-class GenerateModelCommand extends Command
+class GenerateModelCommand extends BaseCommand
 {
     /**
      * The name and signature of the console command.
@@ -31,10 +31,6 @@ class GenerateModelCommand extends Command
     protected $fieldsDate;
     protected $databaseConnection;
 
-    protected $columns;
-    protected $options;
-    protected $excludes;
-
     /**
      * Create a new command instance.
      *
@@ -43,28 +39,6 @@ class GenerateModelCommand extends Command
     public function __construct()
     {
         parent::__construct();
-
-        $this->options = [
-            'connection' => '',
-            'table' => '',
-            'all' => true
-        ];
-
-        $this->excludes = [
-            'html_templates',
-            'menus',
-            'menus_translate',
-            'migrations',
-            'pages',
-            'pages_translate',
-            'page_attachments',
-            'password_reminders',
-            'sessions',
-            'settings',
-            'taggables',
-            'tags',
-            'users',
-        ];
     }
 
     /**
@@ -113,45 +87,10 @@ class GenerateModelCommand extends Command
 
     protected function generateModelFullPath($table)
     {
-        $filename = str_singular(ucfirst($table));
+        $filename = $this->getFilename($table);
         $fullPath = "app/Model/$filename.php";
         $this->info("Generating file: $filename.php");
         return $fullPath;
-    }
-
-    protected function getTables()
-    {
-        if ($this->options['all']) {
-            return $this->getAllTables();
-        }
-        return explode(',', $this->options['table']);
-    }
-
-    protected function getAllTables()
-    {
-        $tables = [];
-        if (strlen($this->options['connection']) <= 0) {
-            $tables = collect(DB::select(DB::raw('show tables')))->flatten();
-        } else {
-            $tables = collect(DB::connection($this->options['connection'])->select(DB::raw('show tables')))->flatten();
-        }
-
-        $tables = $tables->map(function ($value, $key) {
-            return collect($value)->flatten()[0];
-        })->reject(function ($value, $key) {
-            return $value == 'migrations';
-        });
-        return $tables;
-    }
-
-    protected function isExecutable()
-    {
-        if (strlen($this->options['table']) <= 0 && $this->options['all'] == false) {
-            $this->error('No --table specified or --all');
-
-            return false;
-        }
-        return true;
     }
 
     protected function getStub()
@@ -159,49 +98,6 @@ class GenerateModelCommand extends Command
         $this->info('loading model stub');
 
         return __DIR__ . '/../stubs/model.stub';
-    }
-
-    protected function getOptions()
-    {
-        $this->options['table'] = $this->option('table') ? $this->option('table') : '';
-
-        $this->options['all'] = $this->option('all') ? true : false;
-
-        $this->options['connection'] = ($this->option('connection')) ? $this->option('connection') : '';
-    }
-
-    protected function getSchema($tableName)
-    {
-        $this->info('Retrieving table definition for: ' . $tableName);
-        
-        if (strlen($this->options['connection']) <= 0) {
-            return Schema::getColumnListing($tableName);
-        } else {
-            return Schema::connection($this->options['connection'])->getColumnListing($tableName);
-        }
-    }
-
-    protected function describeTable($tableName)
-    {
-        $this->info('Retrieving column information for : ' . $tableName);
-        if (strlen($this->options['connection']) <= 0) {
-            return DB::select(DB::raw('describe ' . $tableName));
-        } else {
-            return DB::connection($this->options['connection'])->select(DB::raw('describe ' . $tableName));
-        }
-    }
-
-    protected function setColumns($table)
-    {
-        $columns = $this->describeTable($table);
-
-        $this->columns = collect();
-        foreach ($columns as $col) {
-            $this->columns->push([
-                'field' => $col->Field,
-                'type' => $col->Type,
-            ]);
-        }
     }
 
     /**
@@ -214,7 +110,7 @@ class GenerateModelCommand extends Command
      */
     public function replaceClassName($stub, $tableName)
     {
-        return str_replace('{{class}}', str_singular(ucfirst($tableName)), $stub);
+        return str_replace('{{class}}', $this->getFilename($tableName), $stub);
     }
 
     /**
@@ -268,16 +164,5 @@ class GenerateModelCommand extends Command
         $stub = str_replace('{{casts}}', $this->fieldsCast, $stub);
         $stub = str_replace('{{dates}}', $this->fieldsDate, $stub);
         return $stub;
-    }
-
-    /**
-     * reset all variables to be filled again when using multiple
-     */
-    protected function resetFields()
-    {
-        $this->fieldsFillable = '';
-        $this->fieldsHidden = '';
-        $this->fieldsCast = '';
-        $this->fieldsDate = '';
     }
 }
