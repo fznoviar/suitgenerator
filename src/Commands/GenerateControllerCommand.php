@@ -23,7 +23,7 @@ class GenerateControllerCommand extends BaseCommand
      *
      * @var string
      */
-    protected $description = 'Generate models for the given tables based on their columns';
+    protected $description = 'Generate controllers for the given tables based on their columns';
 
     protected $fieldsRules;
 

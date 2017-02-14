@@ -38,7 +38,7 @@ class BaseCommand extends Command
         $this->options = [
             'connection' => '',
             'table' => '',
-            'all' => true
+            'all' => true,
         ];
 
         $this->excludes = [
