@@ -1,0 +1,69 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Model\{{model}} as Model;
+
+class {{class}} extends ResourceController
+{
+    /**
+     * Custom view prefix
+     * @var string
+     */
+    protected $viewPrefix;
+
+    /**
+     * Custom route prefix
+     * @var string
+     */
+    protected $routePrefix;
+
+    /**
+     * Custom page name
+     * @var string
+     */
+    protected $pageName;
+
+    /**
+     * Form Rules
+     * @var array
+     */
+    protected $rules = [
+        {{rules}}
+    ];
+
+    public function __construct(Model $model)
+    {
+        parent::__construct($model);
+    }
+
+    protected function beforeValidate()
+    {
+        parent::beforeValidate();
+        // Put your form input preprocessing
+        // e.g. $this->form->filterInput('trim', ['title', 'description']);
+    }
+
+    protected function formData()
+    {
+        parent::formData();
+        // put your view data here
+        // e.g. view()->share('list', $list);
+    }
+
+    protected function formRules()
+    {
+        // add strict form rules
+        parent::formRules();
+    }
+
+    protected function doSave()
+    {
+        // Before all data being fill and save
+        // Usually for belongsTo Relation
+
+        parent::doSave();
+
+        // Put your logic after model being saved
+    }
+}
