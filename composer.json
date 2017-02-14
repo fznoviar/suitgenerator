@@ -1,0 +1,12 @@
+{
+    "name": "firza/suitgenerator",
+    "description": "Generator for Laravel SuitCMS",
+    "authors": [
+        {
+            "name": "fznoviar",
+            "email": "fznoviar@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {}
+}
