@@ -1,0 +1,49 @@
+<?php
+
+namespace App\Model;
+
+class {{class}} extends BaseModel
+{
+    /**
+     * The database table used by the model.
+     *
+     * @var string
+     */
+    protected $table = '{{table}}';
+
+    /**
+     * Attributes that can mass assign.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        {{fillable}}
+    ];
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        {{casts}}
+    ];
+
+    /**
+     * The attributes that should be mutated to dates.
+     *
+     * @var array
+     */
+    protected $dates = [
+        {{dates}}
+    ];
+
+    /**
+     * The attributes that can be use for search in admin.
+     *
+     * @var array
+     */
+    protected $searchField = [
+        //
+    ];
+}
