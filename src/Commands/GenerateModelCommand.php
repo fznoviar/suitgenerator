@@ -64,7 +64,7 @@ class GenerateModelCommand extends BaseCommand
 
             $model = [
                 'table' => $table,
-                'fillable' => $this->getSchema($table),
+                'fillable' => $this->getFullSchema($table),
                 'guardable' => [],
                 'hidden' => [],
                 'casts' => [],
@@ -164,5 +164,16 @@ class GenerateModelCommand extends BaseCommand
         $stub = str_replace('{{casts}}', $this->fieldsCast, $stub);
         $stub = str_replace('{{dates}}', $this->fieldsDate, $stub);
         return $stub;
+    }
+
+    /**
+     * reset all variables to be filled again when using multiple
+     */
+    protected function resetFields()
+    {
+        $this->fieldsFillable = '';
+        $this->fieldsHidden = '';
+        $this->fieldsCast = '';
+        $this->fieldsDate = '';
     }
 }

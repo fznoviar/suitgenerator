@@ -1,0 +1,20 @@
+{
+    "draw": {{ \Input::get('draw', 1) }},
+    "recordsTotal": {{ $total }},
+    "recordsFiltered": {{ $models->total() }},
+    "data" : [
+        @foreach($models as $key => $model)
+        [
+            "{{ $model->getKey() }}",
+            "{{ $model->created_at}}",
+            "{{ $model->updated_at}}",
+            "{!! sprintf(
+                "<a href='%s' class='btn default btn-xs green'><i class='fa fa-edit'></i> Edit </a><a href='%s' class='btn default btn-xs red delete' data-token='%s'><i class='fa fa-trash-o'></i> Delete </a>",
+                 suitRoute($routePrefix.'.edit', $model),
+                 suitRoute($routePrefix.'.destroy', $model),
+                 \Session::token()
+             )!!}"
+        ]{{ ($models->count()-1 === $key) ? '' : ',' }}
+        @endforeach
+    ]
+}

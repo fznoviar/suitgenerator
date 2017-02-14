@@ -60,7 +60,7 @@ class GenerateControllerCommand extends BaseCommand
 
             $model = [
                 'table' => $table,
-                'rules' => $this->getSchema($table),
+                'rules' => $this->getFullSchema($table),
             ];
 
             $this->setColumns($table);
@@ -143,5 +143,13 @@ class GenerateControllerCommand extends BaseCommand
         // replace in stub
         $stub = str_replace('{{rules}}', $this->fieldsRules, $stub);
         return $stub;
+    }
+
+    /**
+     * reset all variables to be filled again when using multiple
+     */
+    protected function resetFields()
+    {
+        $this->fieldsRules = '';
     }
 }

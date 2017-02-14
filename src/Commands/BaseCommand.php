@@ -115,10 +115,22 @@ class BaseCommand extends Command
         $this->options['connection'] = ($this->option('connection')) ? $this->option('connection') : '';
     }
 
-    protected function getSchema($tableName)
+    protected function getFullSchema($tableName)
     {
+        $columns = $this->getSchema($tableName);
+        if ($this->isTranslateable($tableName)) {
+            $translateColumns = array_slice($this->getSchema($tableName, true), 2);
+            $columns = array_merge($columns, $translateColumns);
+        }
+        return $columns;
+    }
+
+    protected function getSchema($tableName, $translate = false)
+    {
+        if ($translate) {
+            $tableName = $this->getTranslateTable($tableName);
+        }
         $this->info('Retrieving table definition for: ' . $tableName);
-        
         if (strlen($this->options['connection']) <= 0) {
             return Schema::getColumnListing($tableName);
         } else {
@@ -126,8 +138,11 @@ class BaseCommand extends Command
         }
     }
 
-    protected function describeTable($tableName)
+    protected function describeTable($tableName, $translate = false)
     {
+        if ($translate) {
+            $tableName = $this->getTranslateTable($tableName);
+        }
         $this->info('Retrieving column information for : ' . $tableName);
         if (strlen($this->options['connection']) <= 0) {
             return DB::select(DB::raw('describe ' . $tableName));
@@ -136,27 +151,36 @@ class BaseCommand extends Command
         }
     }
 
-    protected function setColumns($table)
+    protected function isTranslateable($tableName)
     {
-        $columns = $this->describeTable($table);
-
-        $this->columns = collect();
-        foreach ($columns as $col) {
-            $this->columns->push([
-                'field' => $col->Field,
-                'type' => $col->Type,
-            ]);
+        if (Schema::hasTable($this->getTranslateTable($tableName))) {
+            return true;
         }
+        return false;
     }
 
-    /**
-     * reset all variables to be filled again when using multiple
-     */
-    protected function resetFields()
+    protected function getTranslateTable($table)
     {
-        $this->fieldsFillable = '';
-        $this->fieldsHidden = '';
-        $this->fieldsCast = '';
-        $this->fieldsDate = '';
+        return $table . '_translate';
+    }
+
+    protected function setColumns($table)
+    {
+        $columns = ['default' => $this->describeTable($table)];
+        if ($this->isTranslateable($table)) {
+            $translateColumns = array_slice($this->describeTable($table, true), 2);
+            $columns = ['default' => $columns, 'translate' => $translateColumns];
+        }
+
+        $this->columns = collect();
+        foreach ($columns as $key => $columnTypes) {
+            foreach ($columnTypes as $col) {
+                $this->columns->push([
+                    'field' => $col->Field,
+                    'type' => $col->Type,
+                    'translate' => ($key == 'default') ? false : true
+                ]);
+            }
+        }
     }
 }

@@ -14,6 +14,7 @@ class SuitGeneratorServiceProvider extends ServiceProvider
     {
         $this->registerModelGenerator();
         $this->registerControllerGenerator();
+        $this->registerViewGenerator();
     }
     
     private function registerModelGenerator()
@@ -30,5 +31,13 @@ class SuitGeneratorServiceProvider extends ServiceProvider
             return $app['Fznoviar\SuitGenerator\Commands\GenerateControllerCommand'];
         });
         $this->commands('command.fznoviar.suitcontroller');
+    }
+
+    private function registerViewGenerator()
+    {
+        $this->app->singleton('command.fznoviar.suitview', function ($app) {
+            return $app['Fznoviar\SuitGenerator\Commands\GenerateViewCommand'];
+        });
+        $this->commands('command.fznoviar.suitview');
     }
 }

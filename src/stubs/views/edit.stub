@@ -1,0 +1,12 @@
+@extends(suitViewName($viewPrefix.'.form'))
+
+@section('page-title')
+    Edit {{ $pageName }}
+@endsection
+
+@section('page-breadcrumb')
+    @parent
+    <li>
+        <i class="fa fa-angle-right"></i> Edit {{ $pageName }}
+    </li>
+@endsection

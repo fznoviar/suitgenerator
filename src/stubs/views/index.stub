@@ -1,0 +1,28 @@
+@extends('admins._layouts.index-base')
+
+@section('page-title')
+    {{ $pageName }}
+@endsection
+
+@section('page-breadcrumb')
+    @parent
+    <li>
+        <i class="fa fa-angle-right"></i> {{ $pageName }}
+    </li>
+@endsection
+
+@section('table-title')
+    {{ $pageName }} Table
+@endsection
+
+@section('page-header-toolbar')
+    <div class="btn-group pull-right">
+        <a href="{{ suitRoute($routePrefix.'.create') }}" class="btn btn-sm btn-primary"><i class="glyphicon glyphicon-plus"></i>&nbsp;Add New</a>
+    </div>
+@endsection
+
+@section('table-column-checkbox')
+    <label><input type="checkbox" data-name="id">#</label>
+    <label><input type="checkbox" checked data-name="created_at">Created At</label>
+    <label><input type="checkbox" data-name="updated_at">Updated At</label>
+@endsection

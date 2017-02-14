@@ -1,0 +1,41 @@
+@extends('admins._layouts.form-base')
+
+@section('form-title')
+    {{ $pageName }} Form
+@endsection
+
+@section('page-breadcrumb')
+    @parent
+    <li>
+        <i class="fa fa-angle-right"></i>
+        <a href="{{ suitRoute($routePrefix.'.index') }}">{{ $pageName }}</a>
+    </li>
+@endsection
+
+@section('form-body')
+{!! Form::suitModel($model, ['prefix' => $routePrefix]) !!}
+    <div class="form-body">
+
+        @include(suitViewName('{{folder}}._translate-header'))
+
+        {{forms}}
+
+        <div class="tab-content" >
+          @foreach (config('suitcms.lang') as $lang => $value)
+              <div role="tabpanel" class="tab-pane {{ ($lang == config('app.fallback_locale'))?'fade in active':'fade' }}" id="{{ $lang }}">
+                {{form_translate}} 
+              </div>
+          @endforeach
+        </div>
+    </div>
+    <div class="form-actions">
+        <div class="row">
+            <div class="col-md-offset-2 col-md-10">
+                {!! Form::suitSubmit() !!}
+                {!! Form::suitReset() !!}
+                {!! Form::suitBack() !!}
+            </div>
+        </div>
+    </div>
+{!! Form::close() !!}
+@endsection
